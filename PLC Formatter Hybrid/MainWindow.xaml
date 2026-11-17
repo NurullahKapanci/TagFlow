@@ -1,0 +1,174 @@
+﻿<Window x:Class="TagFormatterApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TagFlow" Height="720" Width="1200"
+        WindowStartupLocation="CenterScreen" Background="#FFE1E4E8">
+
+    <Window.Resources>
+        <!-- Modern Buton Stili -->
+        <Style TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="4" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 0. ÜST ÇUBUK: Mod Seçimi ve Excel Veri Çekme -->
+        <Border Grid.Row="0" Background="#FFF4F6F8" BorderBrush="#FFC8CCD2" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Sol: Mod Seçimi -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Çalışma Modu:" FontWeight="Bold" FontSize="13.5" Foreground="#FF24292F" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <RadioButton x:Name="RbAutoMode" Content="Otomatik" IsChecked="True" FontSize="13" FontWeight="SemiBold" Foreground="#FF24292F" Margin="0,0,20,0" VerticalContentAlignment="Center" Checked="Mode_Changed"/>
+                    <RadioButton x:Name="RbManualMode" Content="Manuel" FontSize="13" FontWeight="SemiBold" Foreground="#FF24292F" VerticalContentAlignment="Center" Checked="Mode_Changed"/>
+                </StackPanel>
+
+                <!-- Sağ: Excel Parametreleri -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Sayfa:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold" Foreground="#FF57606A"/>
+                    <TextBox x:Name="TxtExcelSheet" Width="75" Height="26" VerticalContentAlignment="Center" Padding="5,0" Text="" ToolTip="Boş bırakılırsa ilk sayfa okunur" BorderBrush="#FFC8CCD2" Margin="0,0,8,0"/>
+
+                    <TextBlock Text="Sütun:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold" Foreground="#FF57606A"/>
+                    <TextBox x:Name="TxtExcelCol" Width="34" Height="26" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="" ToolTip="Boş bırakılırsa A sütunu okunur" BorderBrush="#FFC8CCD2" Margin="0,0,8,0"/>
+
+                    <TextBlock Text="Başlangıç:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold" Foreground="#FF57606A"/>
+                    <TextBox x:Name="TxtExcelStartRow" Width="40" Height="26" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="" ToolTip="Boş bırakılırsa 1'den başlar" BorderBrush="#FFC8CCD2" Margin="0,0,8,0"/>
+
+                    <TextBlock Text="Bitiş:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold" Foreground="#FF57606A"/>
+                    <TextBox x:Name="TxtExcelEndRow" Width="40" Height="26" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Text="" ToolTip="Boş bırakılırsa son dolu satıra kadar gider" BorderBrush="#FFC8CCD2" Margin="0,0,10,0"/>
+
+                    <Button Content="Excel'den Çek" Click="BtnImportExcel_Click" Height="28" Padding="12,0" Background="#FF217346" Foreground="White" FontWeight="SemiBold" FontSize="12.5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 1. ŞABLON KARTI -->
+        <Border x:Name="GrpTemplate" Grid.Row="1" Background="#FFF4F6F8" BorderBrush="#FFC8CCD2" BorderThickness="1" CornerRadius="6" Margin="0,0,0,12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Kart Başlığı -->
+                <Border Grid.Row="0" Background="#FFE8ECEF" BorderBrush="#FFC8CCD2" BorderThickness="0,0,0,1" CornerRadius="6,6,0,0" Padding="12,7">
+                    <Grid>
+                        <TextBlock x:Name="LblTemplateHeader" Text="Örnek SCL Blok Çıktısı (İçindeki #&quot;ETİKET&quot; otomatik algılanır)" 
+                                   VerticalAlignment="Center" FontWeight="Bold" FontSize="13" Foreground="#FF24292F"/>
+                        <Button Content="Şablonu Temizle" Click="BtnClearTemplate_Click" HorizontalAlignment="Right"
+                                Height="24" Padding="10,0" Background="#FF6E7781" Foreground="White" FontSize="11.5" FontWeight="SemiBold"/>
+                    </Grid>
+                </Border>
+
+                <!-- Metin Alanı -->
+                <TextBox x:Name="TxtTemplate" Grid.Row="1" Height="220" AcceptsReturn="True" TextWrapping="Wrap" 
+                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                         FontFamily="Consolas" FontSize="13" Padding="10" BorderThickness="0" Background="Transparent"/>
+            </Grid>
+        </Border>
+
+        <!-- 2. ORTA BÖLÜM: Girdiler ve Çıktı -->
+        <Grid Grid.Row="2" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.35*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- SOL KART A: Otomatik Mod Girdi Kutusu -->
+            <Border x:Name="GrpAutoInput" Grid.Column="0" Background="#FFF4F6F8" BorderBrush="#FFC8CCD2" BorderThickness="1" CornerRadius="6" Visibility="Visible">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#FFE8ECEF" BorderBrush="#FFC8CCD2" BorderThickness="0,0,0,1" CornerRadius="6,6,0,0" Padding="12,8">
+                        <TextBlock Text="Girdi Etiketleri (Her satıra bir tane)" FontWeight="Bold" FontSize="13" Foreground="#FF24292F" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <TextBox x:Name="TxtAutoInput" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas" FontSize="13.5" Padding="10" BorderThickness="0" Background="Transparent"
+                             Text="0320P130&#x0a;0320V004"/>
+                </Grid>
+            </Border>
+
+            <!-- SOL KART B: Manuel Çoklu Sütun Kutucukları -->
+            <Border x:Name="GrpManualInput" Grid.Column="0" Background="#FFF4F6F8" BorderBrush="#FFC8CCD2" BorderThickness="1" CornerRadius="6" Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#FFE8ECEF" BorderBrush="#FFC8CCD2" BorderThickness="0,0,0,1" CornerRadius="6,6,0,0" Padding="12,7">
+                        <Grid>
+                            <TextBlock Text="Girdi Sütunları" VerticalAlignment="Center" FontWeight="Bold" FontSize="13" Foreground="#FF24292F"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="+ Sütun Ekle" Click="BtnAddColumn_Click" Height="24" Padding="10,0" Margin="0,0,6,0" Background="#FF2DA44E" Foreground="White" FontWeight="SemiBold" FontSize="11.5"/>
+                                <Button Content="- Son Sütunu Sil" Click="BtnRemoveColumn_Click" Height="24" Padding="10,0" Background="#FFCF222E" Foreground="White" FontWeight="SemiBold" FontSize="11.5"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Padding="6">
+                        <UniformGrid x:Name="ColumnsContainer" Rows="1"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- SAĞ KART: Oluşturulan SCL Çıktısı -->
+            <Border Grid.Column="2" Background="#FFF4F6F8" BorderBrush="#FFC8CCD2" BorderThickness="1" CornerRadius="6">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#FFE8ECEF" BorderBrush="#FFC8CCD2" BorderThickness="0,0,0,1" CornerRadius="6,6,0,0" Padding="12,7">
+                        <Grid>
+                            <TextBlock Text="Oluşturulan SCL Çıktısı" VerticalAlignment="Center" FontWeight="Bold" FontSize="13" Foreground="#FF24292F"/>
+                            <Button x:Name="BtnCopyOutput" Content="Tümünü Kopyala" Click="BtnCopyOutput_Click" HorizontalAlignment="Right"
+                                    Height="24" Padding="10,0" Background="#FF0969DA" Foreground="White" FontSize="11.5" FontWeight="SemiBold"/>
+                        </Grid>
+                    </Border>
+
+                    <TextBox x:Name="TxtOutput" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                             FontFamily="Consolas" FontSize="13.5" Padding="10" IsReadOnly="True" BorderThickness="0" Background="Transparent" Foreground="#FF24292F"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 3. ALT ÇUBUK: Ana İşlem Butonları -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Temizle" Width="95" Height="36" Margin="0,0,10,0" Click="BtnClear_Click" Background="#FFD5DBDF" Foreground="#FF24292F" BorderBrush="#FFC8CCD2" BorderThickness="1" FontWeight="SemiBold"/>
+            <Button Content="Dönüştür" Width="135" Height="36" Margin="0,0,10,0" Click="BtnConvert_Click" FontWeight="Bold" Background="#FF0969DA" Foreground="White" FontSize="13.5"/>
+            <Button Content="TXT Olarak Kaydet" Width="155" Height="36" Click="BtnSave_Click" FontWeight="Bold" Background="#FF24292F" Foreground="White" FontSize="13"/>
+        </StackPanel>
+    </Grid>
+</Window>
